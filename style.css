@@ -1,0 +1,58 @@
+body {
+    font-family: 'Roboto', sans-serif;;
+}
+
+.nav-font{
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.search-icon{
+    border-right: none;
+    border-bottom-right-radius: 0;
+    border-top-right-radius: 0;
+    background-color: white;
+    color: #899097;
+}
+
+.search-field{
+    border-left: 0;
+}
+
+#search-btn{
+    background-color: #F06C4E;
+    border-color: #F06C4E;
+    font-family: 'Roboto', sans-serif;
+    font-size: 12pt;
+    padding: 0 25px;
+}
+
+#meals{
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-gap: 35px;
+}
+
+.mealDisplay{
+    width: 100%;
+    border-radius: 10px;
+    background-color: #F8F7F5;
+}
+
+.mealDisplay img{
+    width: 100%;
+    object-fit: cover;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
+
+.mealName{
+    line-height: 1.5em;
+    color: #252525;
+    font-family: 'Roboto', sans-serif;
+    font-size: 12pt;
+    font-weight: 500;
+    padding: 20px 10px;
+    margin: auto;
+}
