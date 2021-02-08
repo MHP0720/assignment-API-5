@@ -1,94 +1,104 @@
-const apiBase = 'https://www.themealdb.com/api/json/v1/1/search.php?';
+ 
 
-const getMealData = meals => {
-    const url = `${apiBase}f=${meals}`;
+const mealsContainer = document.getElementById('meals-container');
+const mealDetailsDiv = document.getElementById("meal-details");
+
+
+// foods
+const getMealData = mealInput => {
+    const url = `https://www.themealdb.com/api/json/v1/1/search.php?s=${mealInput}`;
     fetch(url)
-        .then(Response => Response.json())
-        .then(data => updateUI(data))
+        .then(response => response.json())
+        .then(data => updateUI(data));
 }
 
+
+// Search Button  
 const searchBtn = document.getElementById('search-btn');
 searchBtn.addEventListener('click', () => {
-    const mealInput = document.getElementById('meal').value;
+    const mealInput = document.getElementById('food-search').value;
     getMealData(mealInput)
 })
 
+
+//  Meal's Name and Ingredients
+const setMealDetails = (data) => {
+    const meal = data.meals[0];
+    document.getElementById("meal-image").setAttribute('src', `${meal.strMealThumb}`);
+    document.getElementById("meal-name").innerText = meal.strMeal;
+    const ul = document.getElementById("ingredients-list");
+    ul.innerHTML = "";
+
+    for (let i = 1; i <= 20; i++) {
+        if (meal[`strIngredient${i}`] === "")
+            break;
+        const li = document.createElement('li');
+
+        const ingredientName = meal[`strIngredient${i}`];
+        const ingredientMeasure = meal[`strMeasure${i}`];
+
+        li.innerHTML = `<i class="checkbox fas fa-check-square"></i>${ingredientMeasure} ${ingredientName}`;
+        ul.appendChild(li);
+    }
+}
+
+
+//    Meal Data By Meal ID
+const mealDetails = mealId => {
+    fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${mealId}`)
+        .then(response => response.json())
+        .then(data => setMealDetails(data))
+    mealDetailsDiv.style.display = 'block';
+    location.href = '#meal-details'
+}
+
+
+//   meal information
 const updateUI = mealsCollection => {
-    
 
-    mealsCollection.meals.forEach(singleMeal => {
-        const multipleMealDiv = document.getElementById('meals');
+    if (mealsCollection.meals === null) {
+        clearBody();
+        notFoundDisplay('block');
+    }
+    else {
+        clear();
 
-        const singleMealDiv = document.createElement('div');
-        singleMealDiv.className = "mealDisplay";
+        mealsCollection.meals.forEach(singleMeal => {
 
-        const mealName = singleMeal.strMeal || "Not Found";
-        const mealImage = singleMeal.strMealThumb;
+            const singleMealDiv = document.createElement('div');
+            singleMealDiv.className = "mealDisplay";
 
-        const singleMealInfo = `
+            const mealName = singleMeal.strMeal;
+            const mealImage = singleMeal.strMealThumb;
+            const mealId = singleMeal.idMeal;
+
+            const singleMealInfo = `
             <img src="${mealImage}"/>
             <div class="d-flex justify-content-center align-items-center">
                 <p class="text-center mealName">${mealName}</p>
             </div>
         `
+            singleMealDiv.innerHTML = singleMealInfo;
+            mealsContainer.appendChild(singleMealDiv);
 
-        singleMealDiv.innerHTML = singleMealInfo;
-        multipleMealDiv.appendChild(singleMealDiv);
-        
-    });
+            singleMealDiv.addEventListener('click', () => {
+                mealDetails(mealId);
+            });
 
-    
- 
+        });
+    }
 }
 
 
-getMealData('pasta');
-
-
-
-
-
-const displayMealDetail = meals=>{
-    const url = `https://www.themealdb.com/api/json/v1/1/categories.php${meals}`
-     fetch(url)
-     .then(Response => Response.json())
-     .then(json => renderMealInfo(json));
-
-    
- }
-
-    const renderMealInfo = meal => {
-        const mealDetail = document.getElementById('meals');    
-         mealDetail.innerHTML = `
-           <h1>${meal.name}</h1>
-           <p>  ${meal.strArea}</p>
-           <p>  ${meal.strCategory}</p>
-            
-           <p>  ${meal.strDrinkAlternate}</p>
-          
-   
-           <p>   ${meal.strIngredient1}</p>
-          
-           <p>  ${meal.strIngredient2}</p>
-            <p>  ${meal.strIngredient3}</p>
-            <p>  ${meal.strIngredient4}</p>
-            <p>  ${meal.strIngredient5}</p>
-            <p>  ${meal.strIngredient6}</p>
-            <p> ${meal.strIngredient7}</p>
-            <p>  ${meal.strIngredient8}</p>
-            <p>  ${meal.strIngredient9}</p>
-            <p>  ${meal.strIngredient10}</p>
-        
-    `
-
-
-
- 
+// None Result Display Message 
+const noneResultDisplay = displayValue => {
+    document.getElementById("no-result").style.display = displayValue;
 }
 
 
-
-
-
-
-
+//   unnecessary element remove
+const clear = () => {
+    noneResultDisplay('none');
+    mealsContainer.innerHTML = "";
+    mealDetailsDiv.style.display = 'none';
+}
